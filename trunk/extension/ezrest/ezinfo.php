@@ -39,7 +39,7 @@ class eZRestInfo
     static function info()
     {
         return array(
-            'Name' => "eZ Rest",
+            'Name' => '<a href="http://projects.ez.no/ezrest">eZ Rest</a>',
             'Version' => "1.0.0beta1",
             'Copyright' => "Copyright © 2008 eZ Systems AS.",
             'Info_url' => "http://ez.no",
