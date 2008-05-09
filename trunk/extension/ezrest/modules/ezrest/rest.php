@@ -166,7 +166,7 @@ if ( $hasError )
 
     if ( $errorReply instanceof DOMNodeList )
     {
-        for ( $i = 0; $i <= $errorReply->length; ++$i)
+        for ( $i = 0; $i < $errorReply->length; ++$i)
         {
             $resultElement = $errorReply->item($i);
             $resultElement = $domDocument->importNode( $resultElement, true );
