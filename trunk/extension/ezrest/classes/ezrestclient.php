@@ -106,6 +106,8 @@ class eZRESTClient
      *
      * @param string URL
      * @param string Post data ( optional )
+     * 
+     * @throws Exception if curl fails
      *
      * @return string  HTTP result ( without headers ), null if the request fails.
     */
@@ -131,14 +133,16 @@ class eZRESTClient
 
             $data = curl_exec( $ch );
             $errNo = curl_errno( $ch );
-            curl_close( $ch );
             if  ( $errNo )
             {
-                eZDebug::writeError( 'curl error: ' . $errNo, 'eZSolr::sendHTTPRequest()' );
-                return null;
+                $curlErrorMsg = curl_error( $ch );
+                curl_close( $ch );
+                eZDebug::writeError( 'curl error: ' . $errNo, 'eZRESTClient::sendHTTPRequest()' );
+                throw Exception('eZRESTClient::sendHTTPRequest() : Curl failed with error : ' . $curlErrorMsg);
             }
             else
             {
+                curl_close( $ch );
                 return $data;
             }
         }
