@@ -138,7 +138,7 @@ class eZRESTClient
                 $curlErrorMsg = curl_error( $ch );
                 curl_close( $ch );
                 eZDebug::writeError( 'curl error: ' . $errNo, 'eZRESTClient::sendHTTPRequest()' );
-                throw Exception('eZRESTClient::sendHTTPRequest() : Curl failed with error : ' . $curlErrorMsg);
+                throw new Exception('eZRESTClient::sendHTTPRequest() : Curl failed with error : ' . $curlErrorMsg);
             }
             else
             {
