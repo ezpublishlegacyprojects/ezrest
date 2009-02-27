@@ -33,7 +33,8 @@ $functionName = $Params['FunctionName'];
 $functionDefinition = $Params['Module']->Functions[$functionName];
 
 // Check if handler exists.
-if ( empty( $functionDefinition['handler'] ) )
+//if ( empty( $functionDefinition['handler'] ) )
+if ( !is_object( $functionDefinition['handler'] ) )
 {
     $errorMessage = 'Empty handler provided for: ' . $functionName;
     eZDebug::writeError( $errorMessage,
@@ -119,25 +120,29 @@ if ( !empty( $functionDefinition['postOptions'] ) )
     }
 }
 
-$domDocument = new DOMDocument( '1.0', 'utf-8' );
-$rootElement = $domDocument->createElement( 'eZREST' );
+$i18nINI =& eZINI::instance( 'i18n.ini' );
+$charset = $i18nINI->variable( 'CharacterSettings', 'Charset' );
+
+$domDocument = new DOMDocumentPHP4( '1.0', $charset );
+$rootElement =& $domDocument->createElement( 'eZREST' );
 $rootElement->setAttribute( 'function', $functionName );
 $domDocument->appendChild( $rootElement );
 
 if ( !$hasError )
 {
-    try
+    // Removed try / catch - keeping indenting
     {
         $result = call_user_func_array( array( $functionDefinition['handler'], $functionDefinition['method'] ),
                                         array( 'getParameters' => $getParamArray,
                                                'getOptions' => $getOptionsArray,
                                                'postParameters' => $postParamArray,
                                                'postOptions' => $postOptionsArray ) );
-        if ( $result instanceof DOMNodeList )
+        //if ( $result instanceof DOMNodeList )
+        if ( is_a( $result, 'DOMNodeList' ) )
         {
             for ( $i = 0; $i < $result->length; ++$i)
             {
-                $resultElement = $result->item($i);
+                $resultElement =& $result->item($i);
                 $resultElement = $domDocument->importNode( $resultElement, true );
                 $rootElement->appendChild( $resultElement );
             }
@@ -149,11 +154,6 @@ if ( !$hasError )
             $rootElement->appendChild( $resultElement );
         }
     }
-    catch ( Exception $e )
-    {
-        $hasError = true;
-        $errorMessage = $e->getMessage();
-    }
 }
 
 if ( $hasError )
@@ -164,11 +164,12 @@ if ( $hasError )
     $errorHandler = new $errorHandlerClass( $errorMessage );
     $errorReply = $errorHandler->getResponse();
 
-    if ( $errorReply instanceof DOMNodeList )
+    //if ( $errorReply instanceof DOMNodeList )
+    if ( is_a( $errorReply, 'DOMNodeList' ) )
     {
         for ( $i = 0; $i < $errorReply->length; ++$i)
         {
-            $resultElement = $errorReply->item($i);
+            $resultElement =& $errorReply->item($i);
             $resultElement = $domDocument->importNode( $resultElement, true );
             $rootElement->appendChild( $resultElement );
         }
@@ -196,7 +197,7 @@ header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
 header( 'Cache-Control: no-cache, must-revalidate' );
 header( 'Pragma: no-cache' );
 header( 'X-Powered-By: eZ Publish' );
-header( 'Content-Type: text/xml; charset=utf-8' );
+header( 'Content-Type: text/xml; charset=' . $charset );
 header( 'Served-by: $_SERVER["SERVER_NAME"]' );
 
 echo $domDocument->saveXML();

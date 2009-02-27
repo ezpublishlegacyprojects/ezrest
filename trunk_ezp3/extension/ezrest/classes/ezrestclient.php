@@ -2,9 +2,9 @@
 //
 //
 // ## BEGIN COPYRIGHT, LICENSE AND WARRANTY NOTICE ##
-// SOFTWARE NAME: eZ Find
+// SOFTWARE NAME: eZ Rest
 // SOFTWARE RELEASE: 1.0.x
-// COPYRIGHT NOTICE: Copyright (C) 2007 eZ Systems AS
+// COPYRIGHT NOTICE: Copyright (C) 2009 eZ Systems AS
 // SOFTWARE LICENSE: GNU General Public License v2.0
 // NOTICE: >
 //   This program is free software; you can redistribute it and/or
@@ -37,9 +37,16 @@
  * $client = new eZRESTClient( 'http://example.com/ezrest/login' );
  * $client->addParameter( 'login', 'admin' );
  * $client->addParameter( 'password', 'publish' );
- * $domLogin = new DOMDocument( '1.0' );
+ * $domLogin = new DOMDocumentPHP4( '1.0' );
  * $domLogin->loadXML( $client->send() ); // parameters are reset when send is invoked.
+ * // PHP 5 style
  * $sessionID1 = $domLogin->getElementsByTagName( 'SessionID' )->item( 0 )->nodeValue;
+ *
+ * // PHP 4 style
+ * $sessionID1 = $domLogin->getElementsByTagName( 'SessionID' );
+ * $sessionID1 = $sessionID1->item( 0 );
+ * $sessionID1 = $sessionID1->Children[ 0 ]->content;
+ *
  *
  *
  * $client2 = new eZRESTClient( 'http://example.com/ezrest/user_create', $sessionID1 );
@@ -70,7 +77,7 @@ class eZRESTClient
      * Send eZRESTClient request. The request
      *
      */
-    public function send()
+    function send()
     {
         $url = $this->URL;
         if ( !empty( $this->GetParameterList ) )
@@ -107,28 +114,27 @@ class eZRESTClient
      * @param string URL
      * @param string Post data ( optional )
      * 
-     * @throws Exception if curl fails
-     *
      * @return string  HTTP result ( without headers ), null if the request fails.
     */
-    protected function sendHTTPRequest( $url, $postData = null )
+    function sendHTTPRequest( $url, $postData = null )
     {
         $connectionTimeout = $this->RestINI->variable( 'RESTClientSettings', 'ConnectionTimeout' );
 
+        // rla hack !
         if ( extension_loaded( 'curl' ) )
         {
             $ch = curl_init();
             curl_setopt( $ch, CURLOPT_URL, $url );
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
             curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $connectionTimeout );
-            if ( $postData !== null )
-            {
-                curl_setopt( $ch, CURLOPT_POST, 1 );
-                curl_setopt( $ch, CURLOPT_POSTFIELDS, $postData );
                 if ( $this->SessionID )
                 {
                     curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( 'Cookie: ' . $this->SessionID ) );
                 }
+            if ( $postData !== null )
+            {
+                curl_setopt( $ch, CURLOPT_POST, 1 );
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, $postData );
             }
 
             $data = curl_exec( $ch );
@@ -138,7 +144,7 @@ class eZRESTClient
                 $curlErrorMsg = curl_error( $ch );
                 curl_close( $ch );
                 eZDebug::writeError( 'curl error: ' . $errNo, 'eZRESTClient::sendHTTPRequest()' );
-                throw new Exception('eZRESTClient::sendHTTPRequest() : Curl failed with error : ' . $curlErrorMsg);
+                eZDebug::writeError( 'curl error: ' . $curlErrorMsg, 'eZRESTClient::sendHTTPRequest()' );
             }
             else
             {
@@ -245,7 +251,7 @@ class eZRESTClient
     /**
      * Reset parameters
      */
-    public function reset()
+    function reset()
     {
         $this->GetParameterList = array();
         $this->PostParameterList = array();
@@ -260,7 +266,7 @@ class eZRESTClient
      * @param string Parameter name
      * @param string Parameter value
      */
-    public function addParameter( $name, $value )
+    function addParameter( $name, $value )
     {
         $this->addGetParameter( $name, $value );
     }
@@ -271,7 +277,7 @@ class eZRESTClient
      * @param string Parameter name
      * @param string Parameter value
      */
-    public function addGetParameter( $name, $value )
+    function addGetParameter( $name, $value )
     {
         $this->GetParameterList[] = array( 'name' => $name,
                                            'value' => $value );
@@ -283,7 +289,7 @@ class eZRESTClient
      * @param string Parameter name
      * @param string Parameter value
      */
-    public function addPostParameter( $name, $value )
+    function addPostParameter( $name, $value )
     {
         $this->PostParameterList[] = array( 'name' => $name,
                                             'value' => $value );
@@ -294,7 +300,7 @@ class eZRESTClient
      *
      * @param strinf Post data
      */
-    public function setPostData( $postData )
+    function setPostData( $postData )
     {
         $this->PostData = $postData;
     }
@@ -304,7 +310,7 @@ class eZRESTClient
      *
      * @param string HTTP resquest content type
      */
-    public function setContentType( $contentType )
+    function setContentType( $contentType )
     {
         $this->ContentType = $contentType;
     }
@@ -314,7 +320,7 @@ class eZRESTClient
      *
      * @param string SessionID
      */
-    public function setSessionID( $sessionID )
+    function setSessionID( $sessionID )
     {
         $this->SessionID = $sessionID;
     }

@@ -35,14 +35,16 @@
 
 class eZRESTDefaultErrorHandler
 {
+    var $domDocument;
+
     /**
      * Constructor. Creates a new eZRESTDefaultErrorHandler.
      *
      * @param string errorMessage
      */
-    public function __construct( $errorMessage )
+    function __construct( $errorMessage )
     {
-        $this->domDocument = new DOMDocument( '1.0' );
+        $this->domDocument = new DOMDocumentPHP4( '1.0' );
 
         $this->createDOM( $errorMessage );
     }
@@ -54,7 +56,7 @@ class eZRESTDefaultErrorHandler
      * $param string errorMessage
      *
      */
-    protected function createDOM( $errorMessage )
+    function createDOM( $errorMessage )
     {
         $domElement = $this->domDocument->createElement( 'Error' );
         $domElement->appendChild( $this->domDocument->createTextNode( $errorMessage ) );
@@ -67,7 +69,7 @@ class eZRESTDefaultErrorHandler
      *
      * @return DOMNodeList May also only return a DOMElement
      */
-    public function getResponse()
+    function getResponse()
     {
         return $this->domDocument->childNodes;
     }

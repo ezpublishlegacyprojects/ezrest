@@ -25,6 +25,13 @@
 // ## END COPYRIGHT, LICENSE AND WARRANTY NOTICE ##
 //
 
+include_once( 'extension/domdocument-php4/classes/domdocument-php4.php' );
+
+include_once( 'extension/ezrest/classes/ezrestbasehandler.php' );
+include_once( 'extension/ezrest/classes/ezrestmoduledefinition.php' );
+include_once( 'extension/ezrest/classes/ezrestloginhandler.php' );
+include_once( 'extension/ezrest/classes/ezrestdefaulterrorhandler.php' );
+
 $Module = array( 'name' => 'eZREST' );
 
 $ViewList = array();
@@ -35,6 +42,11 @@ $restINI = eZINI::instance( 'ezrest.ini' );
 // Loop through REST handlers, and initialize them.
 foreach( $restINI->variable( 'RESTSettings', 'HandlerList' ) as $handlerName )
 {
+    foreach( $restINI->variable( 'RESTSettings', 'RESTExtensions' ) as $extension )
+    {
+        include_once( eZExtension::baseDirectory() . '/' . $extension . '/restserver/' . strtolower( $handlerName ) . '.php' );
+    }
+
     $handler = new $handlerName();
     $handlerResult = $handler->initialize();
     $handlerViewList = $handlerResult->getViewList();

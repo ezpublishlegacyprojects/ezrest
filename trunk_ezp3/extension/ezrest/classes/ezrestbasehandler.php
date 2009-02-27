@@ -44,7 +44,7 @@ class eZRESTBaseHandler
      * @return eZRESTModuleDefinition Module definition used to build
      * module.php definition.
      */
-    public function initialize()
+    function initialize()
     {
     }
 }

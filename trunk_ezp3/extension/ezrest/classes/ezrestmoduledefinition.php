@@ -62,7 +62,8 @@ class eZRESTModuleDefinition
      * @param string View name
      * @param array View definition.
      */
-    public function addView( $name, array $definition )
+//    function addView( $name, array $definition )
+    function addView( $name, $definition )
     {
         $this->ViewList[$name] = $definition;
     }
@@ -73,7 +74,8 @@ class eZRESTModuleDefinition
      * @param string Function name.
      * @param array Function definition.
      */
-    public function addFunction( $name, array $definition )
+//    function addFunction( $name, array $definition )
+    function addFunction( $name, $definition )
     {
         $this->FunctionList[$name] = $definition;
     }
@@ -83,7 +85,7 @@ class eZRESTModuleDefinition
      *
      * @return array Function list
      */
-    public function getFunctionList()
+    function getFunctionList()
     {
         return $this->FunctionList;
     }
@@ -93,13 +95,13 @@ class eZRESTModuleDefinition
      *
      * @return array View list
      */
-    public function getViewList()
+    function getViewList()
     {
         return $this->ViewList;
     }
 
-    protected $FunctionList;
-    protected $ViewList;
+    var $FunctionList;
+    var $ViewList;
 }
 
 ?>

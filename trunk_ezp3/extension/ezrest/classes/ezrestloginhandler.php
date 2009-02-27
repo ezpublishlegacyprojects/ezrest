@@ -36,7 +36,7 @@ class eZRESTLoginHandler extends eZRESTBaseHandler
     /**
      * @reimp
      */
-    public function initialize()
+    function initialize()
     {
         $moduleDefinition = new eZRESTModuleDefinition();
         $moduleDefinition->addView( 'login', array( 'method' => 'loginUser',
@@ -57,12 +57,13 @@ class eZRESTLoginHandler extends eZRESTBaseHandler
      * @return DOMElement DOMElement with Session ID. The session ID will be null
      * if the login fails.
      */
-    public function loginUser( $getParams, $getOptions, $postParams, $postOptions )
+    function loginUser( $getParams, $getOptions, $postParams, $postOptions )
     {
+        include_once( 'kernel/classes/datatypes/ezuser/ezuser.php' );
         $user = eZUser::loginUser( $getParams['login'], $getParams['password'] );
         $sessionID = $user ? session_name() . '=' . session_id() : null;
 
-        $domDocument = new DOMDocument( '1.0' );
+        $domDocument = new DOMDocumentPHP4( '1.0' );
         return $domDocument->createElement( 'SessionID', $sessionID );
     }
 }
