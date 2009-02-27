@@ -113,6 +113,11 @@ class DOMDocumentPHP4
 
         $nodeList = new DOMNodeList();
 
+        if ( !$elements )
+        {
+            return $nodeList;
+        }
+
         foreach( $elements as $element )
         {
             $nodeList->append( $element );
