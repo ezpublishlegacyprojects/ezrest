@@ -22,6 +22,7 @@ RESTExtensions[]
 [RESTClientSettings]
 # REST client connection timeout
 ConnectionTimeout=30
-
+# Verify host and certificate
+VerifyHost=enabled
 
 */ ?>

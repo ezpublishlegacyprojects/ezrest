@@ -119,6 +119,7 @@ class eZRESTClient
     function sendHTTPRequest( $url, $postData = null )
     {
         $connectionTimeout = $this->RestINI->variable( 'RESTClientSettings', 'ConnectionTimeout' );
+        $verifyHost = $this->RestINI->variable( 'RESTClientSettings', 'VerifyHost' );
 
         // rla hack !
         if ( extension_loaded( 'curl' ) )
@@ -127,10 +128,18 @@ class eZRESTClient
             curl_setopt( $ch, CURLOPT_URL, $url );
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
             curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $connectionTimeout );
-                if ( $this->SessionID )
-                {
-                    curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( 'Cookie: ' . $this->SessionID ) );
-                }
+
+            if ( $verifyHost == 'disabled' )
+            {
+                curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
+                curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+            }
+
+            if ( $this->SessionID )
+            {
+                curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( 'Cookie: ' . $this->SessionID ) );
+            }
+
             if ( $postData !== null )
             {
                 curl_setopt( $ch, CURLOPT_POST, 1 );
